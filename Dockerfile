@@ -10,7 +10,7 @@ RUN go build -o demo main.go
 
 FROM scratch
 
-USER 65534
+#USER 65534
 
 COPY --from=builder /build/demo /demo
 
