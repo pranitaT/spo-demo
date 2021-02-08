@@ -1,6 +1,12 @@
 IMAGE:=demo:latest
 NAMESPACE:=demo
 
+.PHONY: build
+build: demo
+
+demo: main.go
+	go build -o demo main.go
+
 .PHONY: image
 image:
 	podman build -t $(IMAGE) -f Dockerfile .
