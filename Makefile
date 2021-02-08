@@ -15,6 +15,8 @@ setup: image openshift-user
 	@IMAGE_REGISTRY_HOST=$$(oc get route default-route -n openshift-image-registry --template='{{ .spec.host }}'); \
 		podman login --tls-verify=false -u $(OPENSHIFT_USER) -p $(shell oc whoami -t) $${IMAGE_REGISTRY_HOST}; \
 		podman push --tls-verify=false localhost/$(IMAGE) $${IMAGE_REGISTRY_HOST}/$(NAMESPACE)/$(IMAGE)
+	@echo "Creating base seccomp profile"
+	@oc apply -f baseprofile.yaml
 
 .PHONY: openshift-user
 openshift-user:
