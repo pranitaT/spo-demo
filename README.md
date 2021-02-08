@@ -79,10 +79,12 @@ audit logs), so it could be dangerous. In this case we're not doing anything
 destructive, but a clever attacker certainly could.
 
 Let's see how SELinux can help us mitigate this. We already have a small
-policy that would take care of this. Let's create it:
+policy that would take care of this. Let's create the policy and wait for it
+to become ready:
 
 ```
 oc create -f selinuxpolicy.yaml
+oc wait --for=condition=ready selinuxpolicy errorlogger
 ```
 
 As you can see, it wasn't as intimidating as we thought! And now our
