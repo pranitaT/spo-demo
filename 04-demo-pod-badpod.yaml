@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: demo
+  name: demo-bad-pod
   namespace: demo
 spec:
   containers:
@@ -18,12 +18,14 @@ spec:
           # NOTE: This uses an appropriate Seccomp profile
           localhostProfile: operator/demo/demo/seccomp-demo.json
         seLinuxOptions:
-          # NOTE: This uses spc_t which is a privileged type in SELinux
-          type: spc_t
+          # NOTE: This uses an appropriate SELinux type
+          type: errorlogger_demo.process
   restartPolicy: Never
   volumes:
     - name: logs
       hostPath:
-        path: /var/log/
+        # NOTE: This writes to the audit logs!
+        # this was probably not intended by the application
+        # developers.
+        path: /var/log/audit/
         type: Directory
-  

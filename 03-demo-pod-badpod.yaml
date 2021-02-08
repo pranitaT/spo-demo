@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: demo
+  name: demo-bad-pod
   namespace: demo
 spec:
   containers:
@@ -24,6 +24,8 @@ spec:
   volumes:
     - name: logs
       hostPath:
-        path: /var/log/
+        # NOTE: This writes to the audit logs!
+        # this was probably not intended by the application
+        # developers.
+        path: /var/log/audit/
         type: Directory
-  

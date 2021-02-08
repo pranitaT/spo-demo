@@ -18,12 +18,12 @@ spec:
           # NOTE: This uses an appropriate Seccomp profile
           localhostProfile: operator/demo/demo/seccomp-demo.json
         seLinuxOptions:
-          # NOTE: This uses spc_t which is a privileged type in SELinux
-          type: spc_t
+          # NOTE: This uses an appropriate SELinux type
+          type: errorlogger_demo.process
   restartPolicy: Never
   volumes:
     - name: logs
       hostPath:
+        # NOTE: this writes to the normal logs as expected
         path: /var/log/
         type: Directory
-  
