@@ -16,7 +16,7 @@ spec:
         seccompProfile:
           type: Localhost
           # NOTE: This uses an appropriate Seccomp profile
-          localhostProfile: operator/demo/demo/seccomp-demo.json
+          localhostProfile: operator/demo/seccomp-demo.json
         seLinuxOptions:
           # NOTE: This uses spc_t which is a privileged type in SELinux
           type: spc_t

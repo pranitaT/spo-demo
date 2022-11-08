@@ -84,7 +84,7 @@ to become ready:
 
 ```
 oc create -f selinuxpolicy.yaml
-oc wait --for=condition=ready selinuxpolicy errorlogger
+oc wait --for=condition=ready selinuxprofile errorlogger
 ```
 
 As you can see, it wasn't as intimidating as we thought! And now our
