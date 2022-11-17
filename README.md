@@ -3,9 +3,12 @@
 This demo is meant to show the basic functionality of the operator for
 deploying Seccomp profiles and SELinux policies.
 
-# Demo setup
+# Demo prerequisites and setup
 
-* Install the SPO from the repo
+* Podman available
+
+* SPO installed. After OpenShift 4.12+, the operator should be available
+  from the included OperatorHub, before 4.12 GA, please follow [upstream instructions](https://github.com/kubernetes-sigs/security-profiles-operator/blob/main/installation-usage.md#openshift)
 
 * Run the `make setup` target. This will set up an appropriate namespace and
   the needed base profile.
@@ -74,17 +77,19 @@ oc create -f 03-demo-pod-badpod.yaml
 ```
 
 This is restricted by Seccomp, but can now write to the host's audit folder...
-these will get forwarded to another bucket (different from the infrastructure's
-audit logs), so it could be dangerous. In this case we're not doing anything
-destructive, but a clever attacker certainly could.
+That's because seccomp can only limit the system calls an application does
+(e.g. write) but does not distinguish between where would the application
+write to.
+In this case we're not doing anything destructive, but a clever attacker
+certainly could.
 
 Let's see how SELinux can help us mitigate this. We already have a small
 policy that would take care of this. Let's create the policy and wait for it
 to become ready:
 
 ```
-oc create -f selinuxpolicy.yaml
-oc wait --for=condition=ready selinuxprofile errorlogger
+oc create -f selinuxprofile.yaml
+oc wait --for=condition=ready --timeout=120s selinuxprofile errorlogger
 ```
 
 As you can see, it wasn't as intimidating as we thought! And now our

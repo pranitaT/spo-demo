@@ -14,6 +14,8 @@ image:
 .PHONY: setup
 setup: image openshift-user
 	@oc apply -f ns.yaml
+	@oc label ns demo --overwrite=true security.openshift.io/scc.podSecurityLabelSync=false
+	@oc label ns demo --overwrite=true pod-security.kubernetes.io/enforce=privileged
 	@oc project $(NAMESPACE)
 	@echo "Exposing the default route to the image registry"
 	@oc patch configs.imageregistry.operator.openshift.io/cluster --patch '{"spec":{"defaultRoute":true}}' --type=merge

@@ -19,7 +19,7 @@ spec:
         #  localhostProfile: operator/demo/seccomp-demo.json
         seLinuxOptions:
           # NOTE: This uses an appropriate SELinux type
-          type: errorlogger_security-profiles-operator.process
+          type: errorlogger_demo.process
   restartPolicy: Never
   volumes:
     - name: logs
