@@ -32,6 +32,7 @@ func writeLogs(args []string) (int, error) {
 			return cantWriteLog, fmt.Errorf("Unable to write log: %w", err)
 		}
 		time.Sleep(2 * time.Second)
+		fmt.Println("Logging")
 	}
 }
 

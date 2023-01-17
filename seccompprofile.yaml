@@ -10,7 +10,7 @@ metadata:
 spec:
   defaultAction: SCMP_ACT_ERRNO
   targetWorkload: "demo"
-  baseProfileName: runc-v1.0.0-rc92
+  baseProfileName: runc-v1.0.0
   architectures:
     - SCMP_ARCH_X86_64
   syscalls:

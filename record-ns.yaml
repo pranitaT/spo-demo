@@ -1,0 +1,6 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: record-demo
+  labels:
+    spo.x-k8s.io/enable-recording: ""

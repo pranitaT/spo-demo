@@ -9,6 +9,7 @@ deploying Seccomp profiles and SELinux policies.
 
 * SPO installed. After OpenShift 4.12+, the operator should be available
   from the included OperatorHub, before 4.12 GA, please follow [upstream instructions](https://github.com/kubernetes-sigs/security-profiles-operator/blob/main/installation-usage.md#openshift)
+  You can also use the `install-resources.yaml` manifest in this repo.
 
 * Run the `make setup` target. This will set up an appropriate namespace and
   the needed base profile.
@@ -44,20 +45,32 @@ First, let's restrict our workload to only be able to do what we expect it to
 do! We can create a Seccomp profile so the application will only run the system
 calls that we approve.
 
-Let's take a look and create the profile:
+Let's take a look at the next workload and the seccomp profiles:
 
 ```
-oc apply -f seccompprofile.yaml
+less seccompprofile.yaml
+less baseprofile-runc.yaml
+less 02-demo-pod-seccomp.yaml
 ```
 
-Note that this profile inherits system calls from another profile. This was
-created before hand with our `setup` target, however, the Security Profiles
-Operator already comes with this in certain namespaces.
+There is a seccomp profile for this workload in `seccompprofile.yaml`.
+Note that this profile inherits system calls from another profile
+through the `baseProfileName` attribute. This base profile is in the
+manifest named `baseprofile-runc.yaml`. We use a base profile and a
+workload-specific profile to keep the workload profile neat and tidy. With
+the current SPO version, the base profile must be created in the same
+namespace as the workload specific profiles, although there are [upstream
+issues](https://github.com/kubernetes-sigs/security-profiles-operator/issues/1313)
+to make the handling of the base profiles easier.
 
 Let's take it into use then!
 
 ```
 oc delete pod demo
+oc create -f baseprofile-runc.yaml
+oc wait --for=condition=ready sp runc-v1.0.0
+oc create -f seccompprofile.yaml
+oc wait --for=condition=ready sp seccomp-demo
 oc create -f 02-demo-pod-seccomp.yaml
 ```
 
@@ -111,3 +124,61 @@ oc create -f 05-demo-secure.yaml
 ```
 
 Our application is now happily running with appropriate security set!
+
+## SELinux profile recording
+
+Even though applying the SELinux policy from an existing manifest already
+solves the problem of installing the policy, creating the policy in the
+first place might not be trivial. For that, SPO offers a feature called
+profile recording that is able to track the application and create profiles
+based on what it does.
+
+For SELinux, the feature tails the audit.log and watches for potential
+AVC denials while the application being recorded is running with a special
+permissive profile.
+
+Therefore we need to enable the feature first:
+```
+oc patch spod spod -p '{"spec":{"enableLogEnricher":true}}' --type=merge -nsecurity-profiles-operator
+```
+
+Then we create a namespace to record the application at. This namespace is labeled
+with `spo.x-k8s.io/enable-recording=` to make sure that SPO knows that it's OK
+to inject the permissive recording policy into workloads in this namespace:
+```
+oc create -f record-ns.yaml
+oc project record-demo
+```
+
+We're ready to start recording. This is done by creating a `ProfileRecording`
+object that will match the labels of the application:
+```
+oc create -f profilerecording.yaml
+```
+
+Then we create the app to be recorded. This is the same manifest as the very first
+one, so no policies are used by this point:
+```
+oc create -f 06-demo-pod-record.yaml
+```
+
+We let the app run so that the recorder catches all the actions the app is doing
+and then delete the application first and then the recording:
+```
+oc delete po demo
+oc delete profilerecording test-recording
+```
+
+Now we should have a policy ready:
+```
+oc get selinuxprofile test-recording-demo -oyaml
+```
+It takes a bit to install the policy:
+```
+oc wait --for=condition=ready --timeout=120s selinuxprofile test-recording-demo
+```
+
+And we can verify the policy works by taking it into use in the next example:
+```
+oc create -f 07-demo-pod-recorded.yaml
+```

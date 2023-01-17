@@ -2,38 +2,57 @@
 apiVersion: security-profiles-operator.x-k8s.io/v1beta1
 kind: SeccompProfile
 metadata:
-  name: runc-v1.0.0-rc92
+  name: runc-v1.0.0
   namespace: demo
 spec:
   defaultAction: SCMP_ACT_ERRNO
-  targetWorkload: base
   architectures:
   - SCMP_ARCH_X86_64
   syscalls:
   - action: SCMP_ACT_ALLOW
     names:
+    - arch_prctl
+    - brk
     - capget
     - capset
     - chdir
     - close
+    - dup3
     - epoll_ctl
     - epoll_pwait
     - execve
+    - exit_group
+    - fchdir
     - fchown
     - fcntl
     - fstat
     - fstatfs
     - futex
+    - getcwd
     - getdents64
     - getpid
     - getppid
+    - getuid
+    - ioctl
+    - mmap
+    - mount
+    - mprotect
     - nanosleep
     - newfstatat
     - openat
+    - pivot_root
     - prctl
     - read
-    - sched_yield
+    - rt_sigaction
+    - rt_sigprocmask
+    - rt_sigreturn
+    - set_tid_address
     - setgid
     - setgroups
+    - sethostname
     - setuid
+    - statfs
+    - tgkill
+    - umask
+    - umount2
     - write

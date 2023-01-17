@@ -1,0 +1,11 @@
+apiVersion: security-profiles-operator.x-k8s.io/v1alpha1
+kind: ProfileRecording
+metadata:
+  name: test-recording
+  namespace: record-demo
+spec:
+  kind: SelinuxProfile
+  recorder: logs
+  podSelector:
+    matchLabels:
+      app: demo
