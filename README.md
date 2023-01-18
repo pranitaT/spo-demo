@@ -148,6 +148,7 @@ to inject the permissive recording policy into workloads in this namespace:
 ```
 oc create -f record-ns.yaml
 oc project record-demo
+oc label ns record-demo security.openshift.io/scc.podSecurityLabelSync=false pod-security.kubernetes.io/enforce=privileged --overwrite=true
 ```
 
 We're ready to start recording. This is done by creating a `ProfileRecording`
