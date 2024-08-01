@@ -12,7 +12,7 @@ spec:
   targetWorkload: "demo"
   baseProfileName: runc-v1.0.0
   architectures:
-    - SCMP_ARCH_X86_64
+    - SCMP_ARCH_PPC64LE
   syscalls:
     - action: SCMP_ACT_ALLOW
       names:
